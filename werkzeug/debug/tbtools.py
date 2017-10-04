@@ -94,7 +94,7 @@ FOOTER = u'''\
 '''
 
 PAGE_HTML = HEADER + u'''\
-<h1>Interactive console</h1>
+<h1>DataFrame Explorer</h1>
 <h2 class="traceback">Interactive debugger <em>(you can access your dataframe through the "df" variable)</em></h2>
 %(summary)s
 <div class="plain">
