@@ -111,9 +111,12 @@ PAGE_HTML = HEADER + u'''\
 </div>
 <div class="explanation">
   <p>You can execute arbitrary Python code in the stack frames and
-  there are some extra helpers available for introspection:
-  <ul><li><code>dump()</code> shows all variables in the frame
-  <li><code>dump(obj)</code> dumps all that's known about the object</ul>
+  there are some extra commands available:
+  <ul>
+  <li><code>dump()</code> shows all variables in the frame</li>
+  <li><code>dump(obj)</code> dumps all that's known about the object</li>
+  <li><code>clear</code> clears the command history</li>
+  </ul>
 </div>
 ''' + FOOTER + '''
 <!--
