@@ -156,8 +156,6 @@ function openShell(consoleNode, target, frameID) {
       var cmd = command.val();
       $.get('', {
           __debugger__: 'yes', cmd: cmd, frm: frameID, s: SECRET}, function(data) {
-        console.log("DATA");
-        console.log(data);
         var tmp = $('<div>').html(data);
         $('span.extended', tmp).each(function() {
           var hidden = $(this).wrap('<span>').hide();
@@ -189,8 +187,6 @@ function openShell(consoleNode, target, frameID) {
   var command = $('<textarea rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">')
     .appendTo(form)
     .keypress(function(e) {
-      console.log(e.key);
-      console.log(e);
       if (e.charCode == 100 && e.ctrlKey) {
         alert("yay");
         output.text('--- screen cleared ---');
@@ -208,6 +204,15 @@ function openShell(consoleNode, target, frameID) {
           if (command.val().trim() === "")
             do_submit = false;
         }
+
+        if (command.val().trim() === 'clear') {
+          do_submit = false;
+          output.text('--- screen cleared ---');
+          command.val("");
+          autosize.update(command);
+          return false;
+        }
+
         if (do_submit) {
           form.submit();
           autosize.update(command);
