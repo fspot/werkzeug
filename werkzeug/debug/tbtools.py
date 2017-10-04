@@ -65,8 +65,6 @@ HEADER = u'''\
 '''
 FOOTER = u'''\
       <div class="footer">
-        Brought to you by <strong class="arthur">DON'T PANIC</strong>, your
-        friendly Werkzeug powered traceback interpreter.
       </div>
     </div>
 
@@ -84,16 +82,20 @@ FOOTER = u'''\
         </form>
       </div>
     </div>
+    <script src="https://unpkg.com/autosize@4.0.0/dist/autosize.js"></script>
+    <script>
+    $(function() {
+        $("div > pre.line.current > img").click();
+        autosize(document.querySelectorAll('textarea'));
+    });
+    </script>
   </body>
 </html>
 '''
 
 PAGE_HTML = HEADER + u'''\
-<h1>%(exception_type)s</h1>
-<div class="detail">
-  <p class="errormsg">%(exception)s</p>
-</div>
-<h2 class="traceback">Traceback <em>(most recent call last)</em></h2>
+<h1>Interactive console</h1>
+<h2 class="traceback">Interactive debugger <em>(you can access your dataframe through the "df" variable)</em></h2>
 %(summary)s
 <div class="plain">
   <form action="/?__debugger__=yes&amp;cmd=paste" method="post">
@@ -108,11 +110,10 @@ PAGE_HTML = HEADER + u'''\
   </form>
 </div>
 <div class="explanation">
-  The debugger caught an exception in your WSGI application.  You can now
-  look at the traceback which led to the error.  <span class="nojavascript">
-  If you enable JavaScript you can also use additional features such as code
-  execution (if the evalex feature is enabled), automatic pasting of the
-  exceptions and much more.</span>
+  <p>You can execute arbitrary Python code in the stack frames and
+  there are some extra helpers available for introspection:
+  <ul><li><code>dump()</code> shows all variables in the frame
+  <li><code>dump(obj)</code> dumps all that's known about the object</ul>
 </div>
 ''' + FOOTER + '''
 <!--
@@ -141,9 +142,7 @@ SUMMARY_HTML = u'''\
 
 FRAME_HTML = u'''\
 <div class="frame" id="frame-%(id)d">
-  <h4>File <cite class="filename">"%(filename)s"</cite>,
-      line <em class="line">%(lineno)s</em>,
-      in <code class="function">%(function_name)s</code></h4>
+  <h4></h4>
   <div class="source">%(lines)s</div>
 </div>
 '''
@@ -232,6 +231,7 @@ class Traceback(object):
         # the the magic variables as defined by paste.exceptions.collector
         self.frames = []
         while tb:
+            self.frames.clear()
             self.frames.append(Frame(exc_type, exc_value, tb))
             tb = tb.tb_next
 
@@ -337,7 +337,7 @@ class Traceback(object):
         if self.is_syntax_error:
             description_wrapper = u'<pre class=syntaxerror>%s</pre>'
         else:
-            description_wrapper = u'<blockquote>%s</blockquote>'
+            description_wrapper = u'<blockquote style="display: none">%s</blockquote>'
 
         return SUMMARY_HTML % {
             'classes':      u' '.join(classes),

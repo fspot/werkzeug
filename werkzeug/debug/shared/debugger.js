@@ -151,11 +151,13 @@ function openShell(consoleNode, target, frameID) {
   var historyPos = 0, history = [''];
   var output = $('<div class="output">[console ready]</div>')
     .appendTo(consoleNode);
-  var form = $('<form>&gt;&gt;&gt; </form>')
+  var form = $('<form><div id="prompt">&gt;&gt;&gt;</div></form>')
     .submit(function() {
       var cmd = command.val();
       $.get('', {
           __debugger__: 'yes', cmd: cmd, frm: frameID, s: SECRET}, function(data) {
+        console.log("DATA");
+        console.log(data);
         var tmp = $('<div>').html(data);
         $('span.extended', tmp).each(function() {
           var hidden = $(this).wrap('<span>').hide();
@@ -182,14 +184,36 @@ function openShell(consoleNode, target, frameID) {
     }).
     appendTo(consoleNode);
 
-  var command = $('<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">')
+  var MULTILINE_CHARS = ['{', '(', '[', ':', ',', '\\'];
+
+  var command = $('<textarea rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">')
     .appendTo(form)
-    .keydown(function(e) {
+    .keypress(function(e) {
+      console.log(e.key);
+      console.log(e);
       if (e.charCode == 100 && e.ctrlKey) {
+        alert("yay");
         output.text('--- screen cleared ---');
         return false;
-      }
-      else if (e.charCode == 0 && (e.keyCode == 38 || e.keyCode == 40)) {
+      } else if (e.key === "Enter") {
+        var do_submit = false;
+        if (e.ctrlKey)
+          do_submit = true;
+        else {
+          var last_char = command.val()[command.val().length - 1];
+          if (MULTILINE_CHARS.indexOf(last_char) === -1)
+            do_submit = true;
+          if (command.val().indexOf('\n') !== -1)
+            do_submit = false;
+          if (command.val().trim() === "")
+            do_submit = false;
+        }
+        if (do_submit) {
+          form.submit();
+          autosize.update(command);
+          return false;
+        }
+      } else if (e.charCode == 0 && (e.keyCode == 38 || e.keyCode == 40)) {
         if (e.keyCode == 38 && historyPos > 0)
           historyPos--;
         else if (e.keyCode == 40 && historyPos < history.length)
