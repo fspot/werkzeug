@@ -675,7 +675,9 @@ def run_simple(hostname, port, application, use_reloader=False,
         raise TypeError('port must be an integer')
     if use_debugger:
         from werkzeug.debug import DebuggedApplication
+        flask_app = application
         application = DebuggedApplication(application, use_evalex)
+        flask_app.debugged_application = application
     if static_files:
         from werkzeug.wsgi import SharedDataMiddleware
         application = SharedDataMiddleware(application, static_files)

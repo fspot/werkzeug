@@ -177,6 +177,8 @@ class _InteractiveConsole(code.InteractiveInterpreter):
 
     def runcode(self, code):
         try:
+            print("LOCALS: ", list(self.locals.keys()))
+            print("GLOBALS: ", list(self.globals.keys()))
             eval(code, self.globals, self.locals)
         except Exception:
             self.showtraceback()
